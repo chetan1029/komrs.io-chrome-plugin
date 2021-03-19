@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="referrer" content="origin">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-transcluent" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>Komrs.io Amazon keyword tracking tool</title>
+
+    <!-- Core CSS Template -->
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <style>
+        #progressContainer {
+            display: flex;
+            align-items: center;
+            transition: opacity 0.7s;
+            opacity: 0;
+        }
+
+        .progress-icon {
+            margin-bottom: 3px;
+        }
+
+        .progress-bar-custom {
+            width: 100%;
+            height: 20px;
+            background: #f0f0f0;
+            position: relative;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: #396aff;
+            height: 20px;
+            width: 0%;
+            transition: width 0.7s;
+        }
+
+        .progress-text {
+            color: white;
+            font-size: 14px;
+            position: absolute;
+            top: 50%;
+            left: 7px;
+            transform: translateY(-50%);
+        }
+
+        .rotating {
+            animation: spin 2s linear infinite;
+        }
+
+        #loginStatusMessage {
+            display: inline-block;
+            margin-left: 24px;
+        }
+
+        #loginStatusMessage.failure {
+            color: #dc3545;
+        }
+
+        #loginStatusMessage.success {
+            color: #00b997;
+        }
+
+        #resultsTable th {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        #downloadCSVButton,
+        #downloadExcelButton {
+            display: inline !important;
+        }
+
+        @keyframes spin {
+            100% {
+                -webkit-transform: rotate(360deg);
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid pr-5 pl-5">
+        <header>
+            <div class="navbar">
+                <div class="d-flex justify-content-between header_bot">
+                    <a href="https://beta.thebatonline.com/" target="_blank">
+                        <img src="./assets/img/logo.svg" alt="" />
+                    </a>
+                    <p class="logged-out hidden">
+                        <a href="#" class="text-primary" data-toggle="modal" data-target="#loginModal"
+                            id="signInButton">Sign In</a> Or
+                        <a href="https://beta.thebatonline.com/signup" target="_blank" class="text-primary">Register</a>
+                    </p>
+                    <p class="logged-in hidden">
+                        <a href="#" class="text-primary" id="logoutButton">Logout</a>
+                    </p>
+                </div>
+            </div>
+        </header>
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="card-title">Keyword Rank</h1>
+                <div class="card min_height dash_card mt-3">
+                    <div class="card-body">
+                        <h3 class="text-muted mb-4">Instantly check your listing's keywords indexing status, ranking
+                            positions and monthly search volume on Amazon.</h3>
+                        <form>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label class="form-label">Amazon Market</label>
+                                        <select class="form-control" id="marketplaceSelect">
+                                            <option value="amazon.com">Amazon.com</option>
+                                            <option value="amazon.ca">Amazon.ca</option>
+                                            <option value="amazon.co.jp">Amazon.co.jp</option>
+                                            <option value="amazon.co.uk">Amazon.co.uk</option>
+                                            <option value="amazon.fr">Amazon.fr</option>
+                                            <option value="amazon.it">Amazon.it</option>
+                                            <option value="amazon.de">Amazon.de</option>
+                                            <option value="amazon.in">Amazon.in</option>
+                                            <option value="amazon.com.mx">Amazon.com.mx</option>
+                                            <option value="amazon.com.au">Amazon.com.au</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="form-group">
+                                        <label class="form-label">Enter Product ASIN</label>
+                                        <input placeholder="Enter Product ASIN" name="asinInput" type="text"
+                                            id="asinInput" class="form-control">
+                                        <div class="invalid-feedback">ASIN is required</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="form-label">Keywords</label>
+                                        <textarea placeholder="Separate your keywords with a new line (200 Keywords maximum at one time)."
+                                            name="keywordsTextarea" id="keywordsTextarea" class="form-control"
+                                            rows="8"></textarea>
+                                        <div class="invalid-feedback"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-8 align-self-center" id="progressContainer">
+                                    <i class="icon icon-xs mr-2">
+                                        <svg class="progress-icon" width="24" height="17" viewBox="0 0 26 17"
+                                            fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M19.5405 2.13641V5.31822H16.557" stroke="#396AFF"
+                                                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                            <path
+                                                d="M6 8.49998C6 4.57575 9.09827 1.5 12.9998 1.5C15.7538 1.5 18.1636 3.0909 19.3111 5.31817"
+                                                stroke="#396AFF" stroke-width="1.5" stroke-linecap="round"
+                                                stroke-linejoin="round" />
+                                            <path d="M6.68884 14.7576V11.5757H9.67237" stroke="#396AFF"
+                                                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                            <path
+                                                d="M20 8.5C20 12.4242 16.9017 15.5 13.0001 15.5C10.2461 15.5 7.83635 13.9091 6.68884 11.6818"
+                                                stroke="#396AFF" stroke-width="1.5" stroke-linecap="round"
+                                                stroke-linejoin="round" />
+                                        </svg>
+                                    </i>
+                                    <div class="progress-bar-custom">
+                                        <div class="progress-fill"></div>
+                                        <span class="progress-text"></span>
+                                    </div>
+                                    <!-- <h3 id="progressContainer"> -->
+
+                                    <!-- </h3> -->
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-0 form-group float-right">
+                                        <button class="mr-3 btn btn-primary" id="checkRanksButton">Check Ranks</button>
+                                        <button class="btn btn-outline-primary" id="cancelButton">Cancel</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </form>
+                        <div class="row mt-5">
+                            <div class="col-md-8">
+                                <form class="search">
+                                    <input type="text" placeholder="Search" id="tableSearchInput" />
+                                    <button type="submit">
+                                        <img src="./assets/img/search_icon.svg" alt="" />
+                                    </button>
+                                </form>
+                            </div>
+                            <div class="col-md-4 text-right align-self-center">
+                                <a id="downloadCSVButton" download="keywords.csv" href="#" class="p-0 btn btn-none">
+                                    <i class="icon icon-xs  mr-2">
+                                        <svg width="16" height="17" viewBox="0 0 16 17" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M15 9L15 11C15 13.2091 13.2091 15 11 15L5 15C2.79086 15 1 13.2091 1 11L1 9"
+                                                stroke="#396AFF" stroke-width="1.5" stroke-linecap="round"
+                                                stroke-linejoin="round"></path>
+                                            <path d="M5.375 4.29167L8 1.66667M8 1.66667L10.625 4.29167M8 1.66667L8 11"
+                                                stroke="#396AFF" stroke-width="1.5" stroke-linecap="round"
+                                                stroke-linejoin="round"></path>
+                                        </svg>
+                                    </i>
+                                    <b>CSV</b>
+                                </a>
+                                <a id="downloadExcelButton" download="keywords.xls" href="#"
+                                    class="p-0 ml-3 btn btn-none">
+                                    <i class="icon icon-xs  mr-2">
+                                        <svg width="16" height="17" viewBox="0 0 16 17" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M15 9L15 11C15 13.2091 13.2091 15 11 15L5 15C2.79086 15 1 13.2091 1 11L1 9"
+                                                stroke="#396AFF" stroke-width="1.5" stroke-linecap="round"
+                                                stroke-linejoin="round"></path>
+                                            <path d="M5.375 4.29167L8 1.66667M8 1.66667L10.625 4.29167M8 1.66667L8 11"
+                                                stroke="#396AFF" stroke-width="1.5" stroke-linecap="round"
+                                                stroke-linejoin="round"></path>
+                                        </svg>
+                                    </i>
+                                    <b>Excel</b>
+                                </a>
+                            </div>
+                        </div>
+                        <table class="table table-striped mt-3" id="resultsTable">
+                            <thead>
+                                <tr>
+                                    <th data-col="0" data-reverse="false">Keywords</th>
+                                    <th data-col="1" data-reverse="false">Indexed</th>
+                                    <th data-col="2" data-reverse="false">Rank</th>
+                                    <th data-col="3" data-reverse="false">Position</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModalLabel">Log In</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">Username or Email</label>
+                        <input placeholder="Enter Username or Email" name="uidInput" type="text" id="uidInput"
+                            class="form-control" value="">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input placeholder="Enter Password" name="passwordInput" type="password" id="passwordInput"
+                            class="form-control" value="">
+                    </div>
+                    <div class="row">
+                        <div class="text-right col"><a class="font-weight-bold"
+                                href="https://beta.thebatonline.com/forgot-password" target="_blank">Forgot
+                                Password?</a></div>
+                    </div>
+                    <div class="form-group">
+                        <button type="button" class="btn btn-primary" id="loginButton">Log In</button>
+                        <div id="loginStatusMessage"></div>
+                    </div>
+                    <p class="text-muted mt-1 mb-4">Do not have the account? <a class="text-primary font-weight-bold"
+                            href="https://beta.thebatonline.com/signup" target="_blank">Sign Up</a></p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="captchaModal" tabindex="-1" role="dialog" aria-labelledby="captchaModalLabel"
+        aria-modal="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="captchaModalLabel">Captcha verification needed</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">You are blocked from Amazon. Please <a href="#" target="_blank">Click here</a> solve captcha on Amazon page and press
+                        continue button</div>
+                    <div class="form-group">
+                        <button type="button" class="btn btn-primary" id="captchaContinueButton">Continue</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="blockModal" tabindex="-1" role="dialog" aria-labelledby="blockModalLabel" aria-modal="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="blockModalLabel">Temporary block</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">You are temporary blocked from Amazon. Please try again later</div>
+                    <div class="form-group">
+                        <button type="button" class="btn btn-primary" id="blockConfirmButton">Got it</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<!-- JavaScript Bundle with Popper -->
+<script src="libs/jquery-3.5.1.slim.min.js"></script>
+<script src="libs/bootstrap.bundle.min.js"></script>
+<script src="libs/excellentexport.js"></script>
+<script src="index.js"></script>
+
+</html>
