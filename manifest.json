@@ -12,12 +12,12 @@
 		"32": "icons/favicon-32x32.png",
 		"64": "icons/favicon-64x64.png",
 		"128": "icons/favicon-128x128.png",
-		"256": "icons/favicon-256x256.png",
+		"256": "icons/favicon-256x256.png"
 	},
 	"permissions": [
 		"tabs",
 		"storage",
-		"https://api.thebatonline.com/*",
+		"https://api.thebatonline.com/login/",
 		"https://www.amazon.com/",
 		"https://www.amazon.ca/",
 		"https://www.amazon.co.jp/",
