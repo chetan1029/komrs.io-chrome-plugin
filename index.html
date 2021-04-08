@@ -95,13 +95,13 @@
         <header>
             <div class="navbar">
                 <div class="d-flex justify-content-between header_bot">
-                    <a href="https://beta.thebatonline.com/" target="_blank">
+                    <a href="https://komrs.io/" target="_blank">
                         <img src="./assets/img/logo.png" alt="Komrs.io" style="height:25px;" />
                     </a>
                     <p class="logged-out hidden">
                         <a href="#" class="text-primary" data-toggle="modal" data-target="#loginModal"
                             id="signInButton">Sign In</a> Or
-                        <a href="https://beta.thebatonline.com/signup" target="_blank" class="text-primary">Register</a>
+                        <a href="https://app.komrs.io/signup" target="_blank" class="text-primary">Register</a>
                     </p>
                     <p class="logged-in hidden">
                         <a href="#" class="text-primary" id="logoutButton">Logout</a>
@@ -275,7 +275,7 @@
                     </div>
                     <div class="row">
                         <div class="text-right col"><a class="font-weight-bold"
-                                href="https://beta.thebatonline.com/forgot-password" target="_blank">Forgot
+                                href="https://app.komrs.io/forgot-password" target="_blank">Forgot
                                 Password?</a></div>
                     </div>
                     <div class="form-group">
@@ -283,7 +283,7 @@
                         <div id="loginStatusMessage"></div>
                     </div>
                     <p class="text-muted mt-1 mb-4">Do not have the account? <a class="text-primary font-weight-bold"
-                            href="https://beta.thebatonline.com/signup" target="_blank">Sign Up</a></p>
+                            href="https://app.komrs.io/signup" target="_blank">Sign Up</a></p>
                 </div>
 
             </div>
@@ -297,7 +297,7 @@
                     <h5 class="modal-title" id="captchaModalLabel">Captcha verification needed</h5>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group">You are blocked from Amazon. Please <a href="#" target="_blank">Click here</a> solve captcha on Amazon page and press
+                    <div class="form-group">You are blocked from Amazon. Please <a href="#" id="captchaLink" target="_blank">click here</a> solve captcha on Amazon page and press
                         continue button</div>
                     <div class="form-group">
                         <button type="button" class="btn btn-primary" id="captchaContinueButton">Continue</button>

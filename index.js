@@ -163,9 +163,10 @@ async function checkRanks(marketplace, asin, keywords, pageIndexArray){
             throw "Temporary block."
         }
 
-        let captcha = resultItems.find(resultItem => resultItem.captcha)
+        let captchaItem = resultItems.find(resultItem => resultItem.captcha)
 
-        if (captcha){
+        if (captchaItem){
+            captchaLink.href = captchaItem.captchaURL
             $("#captchaModal").modal("show")
             await waitForCaptchaSubmission()
             resultItems = clearCaptchaItems(resultItems)
@@ -195,9 +196,10 @@ async function checkRanks(marketplace, asin, keywords, pageIndexArray){
             throw "Temporary block."
         }
 
-        let captcha = resultItems.find(resultItem => resultItem.captcha)
+        let captchaItem = resultItems.find(resultItem => resultItem.captcha)
 
-        if (captcha){
+        if (captchaItem){
+            captchaLink.href = captchaItem.captchaURL
             $("#captchaModal").modal("show")
             await waitForCaptchaSubmission()
             resultItems = clearCaptchaItems(resultItems)
@@ -390,6 +392,7 @@ async function getItemIndexationForKeyword(resultItem, marketplace, asin){
 
     if (page == "captcha"){
         resultItem.captcha = true
+        resultItem.captchaURL = url
         return resultItem
     }
 
@@ -417,6 +420,7 @@ async function getItemDataForKeywordPerPage(resultItem, marketplace, pageIndex, 
 
     if (page == "captcha"){
         resultItem.captcha = true
+        resultItem.captchaURL = url
         return resultItem
     }
 
@@ -471,7 +475,7 @@ async function login(){
 
     try {
 
-        const response = await fetch("https://api.thebatonline.com/login/", options)
+        const response = await fetch("https://api.komrs.io/login/", options)
         const json = await response.json()
 
         if (!response.ok && json.non_field_errors)
