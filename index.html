@@ -17,76 +17,108 @@
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700;900&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="assets/css/main.css" />
+    <link rel="stylesheet" href="assets/css/select2.min.css" />
     <style>
-        #progressContainer {
-            display: flex;
-            align-items: center;
-            transition: opacity 0.7s;
-            opacity: 0;
-        }
+      #progressContainer {
+        display: flex;
+        align-items: center;
+        transition: opacity 0.7s;
+        opacity: 0;
+      }
 
-        .progress-icon {
-            margin-bottom: 3px;
-        }
+      .progress-icon {
+        margin-bottom: 3px;
+      }
 
-        .progress-bar-custom {
-            width: 100%;
-            height: 20px;
-            background: #f0f0f0;
-            position: relative;
-            border-radius: 4px;
-            overflow: hidden;
-        }
+      .progress-bar-custom {
+        width: 100%;
+        height: 20px;
+        background: #f0f0f0;
+        position: relative;
+        border-radius: 4px;
+        overflow: hidden;
+      }
 
-        .progress-fill {
-            background: #396aff;
-            height: 20px;
-            width: 0%;
-            transition: width 0.7s;
-        }
+      .progress-fill {
+        background: #396aff;
+        height: 20px;
+        width: 0%;
+        transition: width 0.7s;
+      }
 
-        .progress-text {
-            color: white;
-            font-size: 14px;
-            position: absolute;
-            top: 50%;
-            left: 7px;
-            transform: translateY(-50%);
-        }
+      .progress-text {
+        color: white;
+        font-size: 14px;
+        position: absolute;
+        top: 50%;
+        left: 7px;
+        transform: translateY(-50%);
+      }
 
-        .rotating {
-            animation: spin 2s linear infinite;
-        }
+      .rotating {
+        animation: spin 2s linear infinite;
+      }
+      .dd-option-image,
+      .dd-selected-image {
+        width: 30px !important;
+        height: 50px !important;
+      }
+      .dd_img {
+        width: 30px !important;
+        height: 40px !important;
+        margin: 10px;
+      }
+      .select2-selection{
+        height: 48px !important;
+      }
+      .select2-selection__arrow{
+        margin: 8px !important;
+      }
+      .select2-selection__rendered{
+        margin-top: -5px;
+      }
+      .dd_text{
+        margin-top: 15px;
+      }
+      .dd_span {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+      }
 
-        #loginStatusMessage {
-            display: inline-block;
-            margin-left: 24px;
-        }
+      #loginStatusMessage {
+        display: inline-block;
+        margin-left: 24px;
+      }
 
-        #loginStatusMessage.failure {
-            color: #dc3545;
-        }
+      #loginStatusMessage.failure {
+        color: #dc3545;
+      }
 
-        #loginStatusMessage.success {
-            color: #00b997;
-        }
+      #loginStatusMessage.success {
+        color: #00b997;
+      }
 
-        #resultsTable th {
-            cursor: pointer;
-            user-select: none;
-        }
+      #resultsTable th {
+        cursor: pointer;
+        user-select: none;
+      }
 
-        #downloadCSVButton,
-        #downloadExcelButton {
-            display: inline !important;
-        }
+      #downloadCSVButton,
+      #downloadExcelButton {
+        display: inline !important;
+      }
 
-        @keyframes spin {
-            100% {
-                -webkit-transform: rotate(360deg);
-                transform: rotate(360deg);
-            }
+      .hide {
+        display: none;
+      }
+
+      @keyframes spin {
+        100% {
+          -webkit-transform: rotate(360deg);
+          transform: rotate(360deg);
         }
+      }
     </style>
 </head>
 
@@ -109,6 +141,9 @@
                 </div>
             </div>
         </header>
+        <div id="alertpop" class="hide alert alert-danger" role="alert">
+          You are not loggedin to Amazon Seller Account, please login.
+        </div>
         <div class="row">
             <div class="col-lg-12">
                 <h1 class="card-title">Komrs.io Amazon keyword tracking tool</h1>
@@ -122,24 +157,18 @@
                                     <div class="form-group">
                                         <label class="form-label">Amazon Market</label>
                                         <select class="form-control" id="marketplaceSelect">
-                                            <option value="amazon.com">Amazon.com</option>
-                                            <option value="amazon.ca">Amazon.ca</option>
-                                            <option value="amazon.co.jp">Amazon.co.jp</option>
-                                            <option value="amazon.co.uk">Amazon.co.uk</option>
-                                            <option value="amazon.fr">Amazon.fr</option>
-                                            <option value="amazon.it">Amazon.it</option>
-                                            <option value="amazon.de">Amazon.de</option>
-                                            <option value="amazon.in">Amazon.in</option>
-                                            <option value="amazon.com.mx">Amazon.com.mx</option>
-                                            <option value="amazon.com.au">Amazon.com.au</option>
+                                            <option value="">Select Amazon Marketplace</option>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="col-md-9">
                                     <div class="form-group">
                                         <label class="form-label">Enter Product ASIN</label>
-                                        <input placeholder="Enter Product ASIN" name="asinInput" type="text"
-                                            id="asinInput" class="form-control">
+                                        <!-- <input placeholder="Enter Product ASIN" name="asinInput" type="text"
+                                            id="asinInput" class="form-control"> -->
+                                        <select class="form-control" name="states[]" id="asinInput">
+                                          <option value="">Select Product</option>
+                                        </select>
                                         <div class="invalid-feedback">ASIN is required</div>
                                     </div>
                                 </div>
@@ -216,7 +245,7 @@
                                     </i>
                                     <b>CSV</b>
                                 </a>
-                                <a id="downloadExcelButton" download="keywords.xls" href="#"
+                                <a id="downloadExcelButton" download="keywords.xlsx" href="#"
                                     class="p-0 ml-3 btn btn-none">
                                     <i class="icon icon-xs  mr-2">
                                         <svg width="16" height="17" viewBox="0 0 16 17" fill="none"
@@ -321,11 +350,44 @@
             </div>
         </div>
     </div>
+    <div
+      class="modal fade"
+      id="sessionModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="sessionModalLabel"
+      aria-modal="true"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="sessionModalLabel">Not Logged In</h5>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              You are not logged in to amazon seller account, please log in
+            </div>
+            <div class="form-group">
+              <button
+                type="button"
+                class="btn btn-primary"
+                id="sessionConfirmButton"
+              >
+                Got it
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 </body>
 <!-- JavaScript Bundle with Popper -->
-<script src="libs/jquery-3.5.1.slim.min.js"></script>
+<script src="libs/jquery-3.1.0.min.js"></script>
+<!-- <script src="libs/jquery-3.5.1.slim.min.js"></script> -->
+<script src="libs/select2.min.js"></script>
 <script src="libs/bootstrap.bundle.min.js"></script>
 <script src="libs/excellentexport.js"></script>
+<script src="libs/ddslick.js"></script>
 <script src="index.js"></script>
 
 </html>

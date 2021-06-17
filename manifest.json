@@ -1,10 +1,10 @@
 {
 	"name": "Komrs.io Amazon keyword tracking tool",
 	"description": "",
-	"version": "0.1",
+	"version": "0.2",
 	"manifest_version": 2,
 	"background": {
-		"scripts": ["background.js"]
+		"scripts": ["libs/jquery-3.1.0.min.js","background.js"]
 	},
 	"browser_action": {},
 	"icons": {
@@ -16,7 +16,7 @@
 	},
 	"permissions": [
 		"storage",
-		"https://api.komrs.io/login/",
+		"https://api.komrs.io/*",
 		"https://www.amazon.com/",
 		"https://www.amazon.ca/",
 		"https://www.amazon.co.jp/",
@@ -25,7 +25,54 @@
 		"https://www.amazon.it/",
 		"https://www.amazon.de/",
 		"https://www.amazon.in/",
+		"https://www.amazon.es/",
+		"https://www.amazon.nl/",
+		"https://www.amazon.se/",
+		"https://www.amazon.ae/",
+		"https://www.amazon.sg/",
+		"https://www.amazon.com.tr/",
 		"https://www.amazon.com.mx/",
-		"https://www.amazon.com.au/"
+		"https://www.amazon.com.au/",
+		"https://www.amazon.com.br/",
+		"https://sellercentral.amazon.com/*",
+		"https://*.amazon.com/*",
+		"https://sellercentral.amazon.ca/*",
+		"https://*.amazon.ca/*",
+		"https://sellercentral.amazon.co.jp/*",
+		"https://*.amazon.co.jp/*",
+		"https://sellercentral.amazon.co.uk/*",
+		"https://*.amazon.co.uk/*",
+		"https://sellercentral.amazon.fr/*",
+		"https://*.amazon.fr/*",
+		"https://sellercentral.amazon.it/*",
+		"https://*.amazon.it/*",
+		"https://sellercentral.amazon.de/*",
+		"https://*.amazon.de/*",
+		"https://sellercentral.amazon.in/*",
+		"https://*.amazon.in/*",
+		"https://sellercentral.amazon.mx/*",
+		"https://*.amazon.mx/*",
+		"https://sellercentral.amazon.au/*",
+		"https://*.amazon.au/*",
+		"https://sellercentral.amazon.es/*",
+		"https://*.amazon.es/*",
+		"https://sellercentral.amazon.nl/*",
+		"https://*.amazon.nl/*",
+		"https://sellercentral.amazon.se/*",
+		"https://*.amazon.se/*",
+		"https://sellercentral.amazon.com.tr/*",
+		"https://*.amazon.com.tr/*",
+		"https://sellercentral.amazon.ae/*",
+		"https://*.amazon.ae/*",
+		"https://sellercentral.amazon.sg/*",
+		"https://*.amazon.sg/*",
+		"https://sellercentral.amazon.com.mx/*",
+		"https://*.amazon.com.mx/*",
+		"https://sellercentral.amazon.com.br/*",
+		"https://*.amazon.com.br/*",
+		"https://sellercentral.amazon.com.au/*",
+		"https://*.amazon.com.au/*"
+
+
 	]
 }
