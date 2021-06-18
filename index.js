@@ -61,12 +61,11 @@ function onInputFocus() {
   this.classList.remove("is-invalid");
 }
 
-function amazonSeller() {
-  var marketPlace = document.querySelector('#marketplaceSelect > option:checked').getAttribute('market');
+function amazonSeller(marketplace) {
+  var marketPlace = marketplace;
   console.log(marketPlace);
- var militime = Date.now() - 172800000;
+  var militime = Date.now() - 172800000;
   var ddate = pastDate(new Date(militime));
-  console.log(encodeURIComponent(ddate));
   fetch(
     `https://sellercentral.${marketPlace}/gp/site-metrics/load-report-JSON.html/ref=au_xx_cont_sitereport?sortColumn=&filterFromDate=${ddate}&filterToDate=${ddate}&fromDate${ddate}=&toDate=${ddate}&cols=&reportID=102%3ADetailSalesTrafficBySKU&sortIsAscending=1&currentPage=0&dateUnit=1&viewDateUnits=ALL&runDate=&_=1623695034884`
   )
@@ -74,7 +73,6 @@ function amazonSeller() {
       return rrs.text();
     })
     .then((rrs2) => {
-      console.log(rrs2);
       var div = document.createElement("div");
       div.innerHTML = rrs2;
       var menu = div.querySelectorAll("#sc-top-nav");
@@ -214,9 +212,14 @@ function marketPlaces() {
                 }
               }
               $("#marketplaceSelect").html(list);
-              setTimeout(() => {
-                amazonSeller();
-              }, 1000);
+
+              for (let i = 0; i < res2.results.length; i++) {
+                if (res2.results[i].status == "active") {
+                  setTimeout(() => {
+                    amazonSeller(res2.results[i].sales_channel_name);
+                  }, 1000);
+                }
+              }
             }
           });
       }
@@ -361,7 +364,7 @@ async function onCheckRanksButtonClick(e) {
 
   if (!isLoggedIn) return $("#loginModal").modal("show");
 
-  const marketplace = marketplaceSelect.value;
+  var marketplace = document.querySelector('#marketplaceSelect > option:checked').getAttribute('market').toLowerCase();
   const asin = asin_curr;
   const keywords = keywordsTextarea.value
     .trim()
