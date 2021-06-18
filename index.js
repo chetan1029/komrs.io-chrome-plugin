@@ -57,7 +57,7 @@ function onInputFocus() {
 }
 
 function amazonSeller() {
-  var marketPlace = $("#marketplaceSelect").val();
+  var marketPlace = document.querySelector('#marketplaceSelect > option:checked').getAttribute('market');
   console.log(marketPlace);
  var militime = Date.now() - 172800000;
   var ddate = pastDate(new Date(militime));
@@ -149,7 +149,7 @@ function formatState (state) {
   if (!state.id) { return state.text; }
   // console.log(state.element);
   var $state = $(
-   '<span class="dd_span"><img sytle="display: inline-block;" class="dd_img" src="'+state.element.getAttribute('thumbnail')+'" /> <strong class="dd_text">' + state.text + '</strong></span>'
+   '<span class="dd_span"><img sytle="display: inline-block;" class="dd_img" src="'+state.element.getAttribute('thumbnail')+'" /> <p class="dd_text">' + state.text + '</p></span>'
   );
   return $state;
  }
@@ -158,7 +158,7 @@ function formatState (state) {
   if (!state.id) { return state.text; }
   console.log(state.element);
   var $state = $(
-   '<span class="dd_span"><img sytle="display: inline-block;" class="dd_img" src="'+state.element.getAttribute('thumbnail')+'" /> <strong class="dd_text">' + state.text + '</strong></span>'
+   '<span class="dd_span"><img sytle="display: inline-block;" class="dd_img" src="'+state.element.getAttribute('thumbnail')+'" /> <p class="dd_text">' + state.text + '</p></span>'
   );
   keywords(state.element)
   asin_curr = state.element.value;
@@ -199,13 +199,13 @@ function marketPlaces() {
               var list = "";
               var ddData = [];
               for (let i = 0; i < res2.results.length; i++) {
-                if(i == 0){
-                  list += `<option value="${res2.results[i].sales_channel_name}">Select Marketplace</option>`;
+                if (i == 0) {
+                  list += `<option value="${res2.results[i].id}" market="${res2.results[i].sales_channel_name}" status="${res2.results[i].status}">Select Marketplace</option>`;
                 }
                 if (res2.results[i].status == "active") {
-                  list += `<option value="${res2.results[i].sales_channel_name}">${res2.results[i].sales_channel_name} (Connected)</option>`;
+                  list += `<option value="${res2.results[i].id}" market="${res2.results[i].sales_channel_name}" status="${res2.results[i].status}">${res2.results[i].sales_channel_name} (Connected)</option>`;
                 } else {
-                  list += `<option value="${res2.results[i].sales_channel_name}">${res2.results[i].sales_channel_name}</option>`;
+                  list += `<option value="${res2.results[i].id}" market="${res2.results[i].sales_channel_name}" status="${res2.results[i].status}">${res2.results[i].sales_channel_name}</option>`;
                 }
               }
               $("#marketplaceSelect").html(list);
@@ -237,8 +237,11 @@ function grabCompany(e) {
         comp_id = 14;
       }
 
+      var marketplace_id = $("#marketplaceSelect").val();
+      console.log(marketplace_id);
+
       fetch(
-        `https://api.komrs.io/companies/${comp_id}/keyword-tracking-products/?limit=100000000&status__name=Active&amazonaccounts__marketplace__sales_channel_name=${e.target.value}`,
+        `https://api.komrs.io/companies/${comp_id}/keyword-tracking-products/?limit=100000000&status__name=Active&marketplace=${marketplace_id}`,
         opts
       )
         .then((res) => {
@@ -257,7 +260,7 @@ function grabCompany(e) {
               obj.imageSrc = res2.results[i].thumbnail;
               obj.selected = false;
               ddData.push(obj);
-              list += `<option value="${res2.results[i].asin}" thumbnail="${res2.results[i].thumbnail == ''? 'assets/img/dummy_image.svg': res2.results[i].thumbnail}" data-id="${res2.results[i].id}">${res2.results[i].sku}</option>`;
+              list += `<option value="${res2.results[i].asin}" thumbnail="${res2.results[i].thumbnail == ''? 'assets/img/dummy_image.svg': res2.results[i].thumbnail}" data-id="${res2.results[i].id}">${res2.results[i].title}</option>`;
             }
             console.log(list);
             document.querySelector("#asinInput").innerHTML = list;
