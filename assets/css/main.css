@@ -11240,5 +11240,19 @@ header>.navbar {
 	}
 }
 
+.loader {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background-color: rgba($white, 0.75);
+		z-index: 9999;
+}
 
+.loader .status {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+}
 /*# sourceMappingURL=main.css.map */

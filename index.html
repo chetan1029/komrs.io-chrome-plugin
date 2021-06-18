@@ -156,10 +156,18 @@
           transform: rotate(360deg);
         }
       }
+
     </style>
 </head>
 
 <body>
+    <div className="loader" id="loader" style="display: none;">
+        <div className="status">
+            <Spinner animation="border" role="status" variant="primary">
+                <span className="sr-only">Loading...</span>
+            </Spinner>
+        </div>
+    </div>
     <div class="container-fluid pr-5 pl-5">
         <header>
             <div class="navbar">
@@ -417,6 +425,7 @@
         </div>
       </div>
     </div>
+
 </body>
 <!-- JavaScript Bundle with Popper -->
 <script src="libs/jquery-3.1.0.min.js"></script>

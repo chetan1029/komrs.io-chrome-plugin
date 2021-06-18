@@ -36,6 +36,11 @@ function attachEventListeners() {
   downloadCSVButton.addEventListener("click", downloadCSV);
   downloadExcelButton.addEventListener("click", downloadExcel);
   loginButton.addEventListener("click", onLoginButtonClick);
+  passwordInput.addEventListener("keypress", function (e) {
+    if (e.key === 'Enter') {
+      onLoginButtonClick();
+    }
+  });
   logoutButton.addEventListener("click", logout);
   captchaContinueButton.addEventListener("click", onCaptchaContinueButtonClick);
   blockConfirmButton.addEventListener("click", onBlockConfirmButtonClick);
@@ -460,9 +465,9 @@ function onTableSearchInput() {
 
 async function onLoginButtonClick() {
   this.disabled = true;
-
+  $("#loader").show();
   await login();
-
+  $("#loader").hide();
   this.disabled = false;
 }
 
