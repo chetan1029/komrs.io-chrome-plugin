@@ -159,6 +159,9 @@ return new_date;
 function formatState (state) {
   if (!state.id) { return state.text; }
   // console.log(state.element);
+  if (state.text.length > 150){
+    state.text = state.text.substring(0,150)+"...";
+  }
   var $state = $(
    '<span class="dd_span"><img sytle="display: inline-block;" class="dd_img" src="'+state.element.getAttribute('thumbnail')+'" /> <p class="dd_text">' + state.text + ' <br > '+state.element.getAttribute('value')+'</p></span>'
   );
@@ -167,7 +170,9 @@ function formatState (state) {
 
  function formatState2 (state) {
   if (!state.id) { return state.text; }
-  console.log(state.element);
+  if (state.text.length > 150){
+    state.text = state.text.substring(0,150)+"...";
+  }
   var $state = $(
    '<span class="dd_span"><img sytle="display: inline-block;" class="dd_img" src="'+state.element.getAttribute('thumbnail')+'" /> <p class="dd_text">' + state.text + ' <br > '+state.element.getAttribute('value')+'</p></span>'
   );
@@ -307,7 +312,7 @@ function grabCompany(e) {
                 // `data.text` is the text that is displayed for the data object
                 if (data.text.indexOf(params.term) > -1 || data.id.indexOf(params.term) > -1) {
                   var modifiedData = $.extend({}, data, true);
-                  
+
                   // You can return modified objects from here
                   // This includes matching the `children` how you want in nested data sets
                   return modifiedData;
