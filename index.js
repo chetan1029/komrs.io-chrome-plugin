@@ -21,8 +21,6 @@ function manageNavigationBar() {
 }
 
 function attachEventListeners() {
-  asinInput.addEventListener("focus", onInputFocus);
-  asinInput.addEventListener("change", keywords);
   marketplaceSelect.addEventListener("change", grabCompany);
   keywordsTextarea.addEventListener("focus", onInputFocus);
   uidInput.addEventListener("focus", () => {
@@ -64,87 +62,97 @@ function onInputFocus() {
 function amazonSeller(marketplace) {
   var marketPlace = marketplace;
   console.log(marketPlace);
-  var militime = Date.now() - 172800000;
-  var ddate = pastDate(new Date(militime));
-  fetch(
-    `https://sellercentral.${marketPlace}/gp/site-metrics/load-report-JSON.html/ref=au_xx_cont_sitereport?sortColumn=&filterFromDate=${ddate}&filterToDate=${ddate}&fromDate${ddate}=&toDate=${ddate}&cols=&reportID=102%3ADetailSalesTrafficBySKU&sortIsAscending=1&currentPage=0&dateUnit=1&viewDateUnits=ALL&runDate=&_=1623695034884`
-  )
-    .then((rrs) => {
-      return rrs.text();
-    })
-    .then((rrs2) => {
-      var div = document.createElement("div");
-      div.innerHTML = rrs2;
-      var menu = div.querySelectorAll("#sc-top-nav");
-      if (menu.length > 0) {
-        var tb = div.querySelectorAll("#sc-content-container");
-        if (tb.length > 0) {
-          // console.log(tb);
-          var parsed_data = JSON.parse(tb[0].textContent);
-          var session_details = [];
-          if (parsed_data.data.rows.length > 0) {
-            for (let i = 0; i < parsed_data.data.rows.length; i++) {
-              var obj = {};
-              obj.sku = parsed_data.data.rows[i][3];
-              obj.sessions = parseInt(parsed_data.data.rows[i][4]);
-              obj.page_views = parseInt(parsed_data.data.rows[i][6]);
-              var militime = Date.now() - 172800000;
-              obj.date = currentDate(new Date(militime));
-              session_details.push(obj);
-            }
-          }
-          console.log(JSON.stringify(session_details));
-          if (session_details.length > 0) {
-            chrome.storage.local.get(["token", "comp_id"], (a) => {
-              if (a.token !== undefined) {
-                var comp_id = "";
-                if (a.comp_id !== undefined) {
-                  comp_id = a.comp_id;
-                } else {
-                  comp_id = 14;
+  setTimeout(() => {
+
+  for(let iii=2; iii <= 8; iii++){
+    var militime = Date.now() - iii * 86400000;
+    var ddate = pastDate(new Date(militime), marketPlace);
+    console.log(ddate);
+    fetch(
+        `https://sellercentral.${marketPlace}/gp/site-metrics/load-report-JSON.html/ref=au_xx_cont_sitereport?sortColumn=&filterFromDate=${ddate}&filterToDate=${ddate}&fromDate=${ddate}&toDate=${ddate}&cols=&reportID=102%3ADetailSalesTrafficBySKU&sortIsAscending=1&currentPage=0&dateUnit=1&viewDateUnits=ALL&runDate=`
+      )
+        .then((rrs) => {
+          return rrs.text();
+        })
+        .then((rrs2) => {
+          var div = document.createElement("div");
+          div.innerHTML = rrs2;
+          var menu = div.querySelectorAll("#sc-top-nav");
+          if (menu.length > 0) {
+            var tb = div.querySelectorAll("#sc-content-container");
+            if (tb.length > 0) {
+              // console.log(tb);
+              var parsed_data = JSON.parse(tb[0].textContent);
+              var session_details = [];
+              var militime = Date.now() - iii * 86400000;
+              if (parsed_data.data.rows.length > 0) {
+                for (let i = 0; i < parsed_data.data.rows.length; i++) {
+                  var obj = {};
+                  obj.sku = parsed_data.data.rows[i][3];
+                  obj.sessions = parseInt(parsed_data.data.rows[i][4]);
+                  obj.page_views = parseInt(parsed_data.data.rows[i][6]);
+                  obj.date = currentDate(new Date(militime));
+                  session_details.push(obj);
                 }
-                fetch(
-                  `https://api.komrs.io/companies/${comp_id}/amazon-product-sessions/bulk_create/`,
-                  {
-                    method: "POST",
-                    headers: {
-                      Authorization: `JWT ${a.token}`,
-                      "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(session_details),
-                  }
-                )
-                  .then((res) => {
-                    return res.json();
-                  })
-                  .then((res2) => {
-                    console.log(res2);
-                  });
               }
-            });
+              console.log(JSON.stringify(session_details));
+              if (session_details.length > 0) {
+                chrome.storage.local.get(["token", "comp_id"], (a) => {
+                  if (a.token !== undefined) {
+                    var comp_id = "";
+                    if (a.comp_id !== undefined) {
+                      comp_id = a.comp_id;
+                    } else {
+                      comp_id = 14;
+                    }
+                    fetch(
+                      `https://api.komrs.io/companies/${comp_id}/amazon-product-sessions/bulk_create/`,
+                      {
+                        method: "POST",
+                        headers: {
+                          Authorization: `JWT ${a.token}`,
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(session_details),
+                      }
+                    )
+                      .then((res) => {
+                        return res.json();
+                      })
+                      .then((res2) => {
+                        console.log(res2);
+                      });
+                  }
+                });
+              }
+            }
+          } else {
+            console.log("not logged in");
+            $("#alertpop").show();
           }
-        }
-      } else {
-        console.log("not logged in");
-        $("#alertpop").show();
-      }
-    });
+        });
+
+  }
+  }, 3000);
 }
 
-function pastDate (date) {
+function pastDate (date, marketPlace) {
   var d = date,
   month = "" + (date.getMonth() + 1),
   day = "" + date.getDate(),
   year = "" + date.getFullYear();
 
-if (month.length > 2) {
+if (month.length < 2) {
   month = "0" + month;
 }
-if (day.length > 2) {
+if (day.length < 2) {
   day = "0" + day;
 }
-var new_date = month + "/" + day + "/" + year;
-
+if (marketPlace == "Amazon.com" || marketPlace == "Amazon.ca"){
+var new_date = month + "%2F" + day + "%2F" + year;
+}else{
+var new_date = day + "%2F" + month + "%2F" + year;
+}
 return new_date;
 }
 
@@ -229,6 +237,7 @@ function marketPlaces() {
 
 function grabCompany(e) {
   console.log(e.target.value);
+  if(document.querySelector('#marketplaceSelect > option:checked').getAttribute("status") == "active"){
   chrome.storage.local.get(["token", "comp_id"], (a) => {
     if (a.token !== undefined) {
       var opts = {
@@ -271,6 +280,8 @@ function grabCompany(e) {
               list += `<option value="${res2.results[i].asin}" thumbnail="${res2.results[i].thumbnail == ''? 'assets/img/dummy_image.svg': res2.results[i].thumbnail}" data-id="${res2.results[i].id}">${res2.results[i].title}</option>`;
             }
             console.log(list);
+            $("#asinInput").show();
+            $("#asin_input").hide();
             document.querySelector("#asinInput").innerHTML = list;
             $("#asinInput").select2({
               templateResult: formatState,
@@ -293,6 +304,13 @@ function grabCompany(e) {
         });
     }
   });
+} else {
+  $("#asinInput").hide();
+  $("#asin_input").show();
+  if(document.querySelectorAll('.select2-container').length > 0){
+    document.querySelector('.select2-container').style.display = 'none';
+  }
+}
 }
 
 function keywords(e) {
@@ -379,13 +397,13 @@ async function onCheckRanksButtonClick(e) {
     keywordsTextarea.classList.add("is-invalid");
   }
 
-  if (keywords.length > 200) {
-    keywordsTextarea.nextElementSibling.textContent =
-      "Keywords are limited to 200 in one time";
-    keywordsTextarea.classList.add("is-invalid");
-  }
+  // if (keywords.length > 200) {
+  //   keywordsTextarea.nextElementSibling.textContent =
+  //     "Keywords are limited to 200 in one time";
+  //   keywordsTextarea.classList.add("is-invalid");
+  // }
 
-  if (!asin || !keywords.length || keywords.length > 200) return;
+  // if (!asin || !keywords.length || keywords.length > 200) return;
 
   prepare();
 
@@ -429,8 +447,10 @@ function post2DB() {
               var opts = {
                 method: "POST",
                 headers: {
-                  Authorization: `JWT ${a.token}`,
+                  'Content-Type': 'application/json',
+                  'Authorization': `JWT ${a.token}`
                 },
+                body: JSON.stringify(arr_rank)
               };
               var comp_id = "";
               if (a.comp_id !== undefined) {
@@ -439,7 +459,7 @@ function post2DB() {
                 comp_id = 14;
               }
               fetch(
-                `https://api.komrs.io/companies/${comp_id}/product-keyword-rank/`,
+                `https://api.komrs.io/companies/${comp_id}/product-keyword-rank/bulk_create/`,
                 opts
               )
                 .then((res) => {
