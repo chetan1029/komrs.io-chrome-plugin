@@ -160,7 +160,7 @@ function formatState (state) {
   if (!state.id) { return state.text; }
   // console.log(state.element);
   var $state = $(
-   '<span class="dd_span"><img sytle="display: inline-block;" class="dd_img" src="'+state.element.getAttribute('thumbnail')+'" /> <p class="dd_text">' + state.text + '</p></span>'
+   '<span class="dd_span"><img sytle="display: inline-block;" class="dd_img" src="'+state.element.getAttribute('thumbnail')+'" /> <p class="dd_text">' + state.text + ' <br > '+state.element.getAttribute('value')+'</p></span>'
   );
   return $state;
  }
@@ -169,7 +169,7 @@ function formatState (state) {
   if (!state.id) { return state.text; }
   console.log(state.element);
   var $state = $(
-   '<span class="dd_span"><img sytle="display: inline-block;" class="dd_img" src="'+state.element.getAttribute('thumbnail')+'" /> <p class="dd_text">' + state.text + '</p></span>'
+   '<span class="dd_span"><img sytle="display: inline-block;" class="dd_img" src="'+state.element.getAttribute('thumbnail')+'" /> <p class="dd_text">' + state.text + ' <br > '+state.element.getAttribute('value')+'</p></span>'
   );
   keywords(state.element)
   asin_curr = state.element.value;
@@ -237,9 +237,11 @@ function marketPlaces() {
 
 function grabCompany(e) {
   console.log(e.target.value);
+  document.querySelector("#keywordsTextarea").value = '';
   if(document.querySelector('#marketplaceSelect > option:checked').getAttribute("status") == "active"){
   chrome.storage.local.get(["token", "comp_id"], (a) => {
     if (a.token !== undefined) {
+      $("#loader").show();
       var opts = {
         method: "GET",
         headers: {
@@ -262,6 +264,7 @@ function grabCompany(e) {
         opts
       )
         .then((res) => {
+          $("#loader").hide();
           return res.json();
         })
         .then((res2) => {
@@ -285,21 +288,35 @@ function grabCompany(e) {
             document.querySelector("#asinInput").innerHTML = list;
             $("#asinInput").select2({
               templateResult: formatState,
-              templateSelection: formatState2
+              templateSelection: formatState2,
+              matcher: function(params, data) {
+                // If there are no search terms, return all of the data
+                if ($.trim(params.term) === '') {
+                  return data;
+                }
+
+                console.log(params)
+                console.log(data)
+
+                // Do not display the item if there is no 'text' property
+                if (typeof data.text === 'undefined') {
+                  return null;
+                }
+
+                // `params.term` should be the term that is used for searching
+                // `data.text` is the text that is displayed for the data object
+                if (data.text.indexOf(params.term) > -1 || data.id.indexOf(params.term) > -1) {
+                  var modifiedData = $.extend({}, data, true);
+                  
+                  // You can return modified objects from here
+                  // This includes matching the `children` how you want in nested data sets
+                  return modifiedData;
+                }
+
+                // Return `null` if the term should not be displayed
+                return null;
+              }
              });
-            // console.log(ddData);
-            // $("#asinInput").ddslick({
-            //   data: ddData,
-            //   width: 855,
-            //   selectText: "Select Product",
-            //   onSelected: function (selectedData) {
-            //     console.log(selectedData);
-            //     asin_curr = selectedData.selectedData.description;
-            //     keywords(selectedData.selectedData.value)
-            //     prod_id = selectedData.selectedData.value;
-            //     //callback function: do something with selectedData;
-            //   },
-            // });
           }
         });
     }
@@ -316,6 +333,7 @@ function grabCompany(e) {
 function keywords(e) {
   chrome.storage.local.get(["token", "comp_id"], (a) => {
     if (a.token !== undefined) {
+      $("#loader").show();
       var opts = {
         method: "GET",
         headers: {
@@ -340,6 +358,7 @@ function keywords(e) {
         opts
       )
         .then((res) => {
+          $("#loader").hide();
           return res.json();
         })
         .then((res2) => {
@@ -355,7 +374,9 @@ function keywords(e) {
           } else {
             document.querySelector("#keywordsTextarea").value = '';
           }
+
         });
+
     }
   });
 }

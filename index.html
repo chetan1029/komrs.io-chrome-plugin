@@ -65,8 +65,8 @@
       }
       .dd_img {
         width: auto !important;
-        height: 23px !important;
-        margin: 17px;
+        height: 30px !important;
+        margin: 5px;
         vertical-align: middle;
       }
       .select2-selection{
@@ -78,14 +78,17 @@
       .select2-selection__rendered{
         margin-top: -5px;
       }
-      .dd_text{
-        margin-top: 13px;
-        font-weight: 500;
+      .dd_text {
+      margin-top: 4px !important;
+      font-weight: 500;
+      margin-left: 10px;
+      line-height: 18px !important;
       }
       .dd_span {
         width: 100%;
         display: flex;
         flex-direction: row;
+        margin-top: 5px;
       }
       .select2-container--default .select2-selection--single{
         border: .5px solid rgba(140,157,202,.5)!important;
@@ -112,8 +115,12 @@
       .select2-dropdown ul {
         padding: 10px;
       }
+      .select2-dropdown li {
+        margin-top: 5px;
+        height: 55px;
+      }
       .select2-results .dd_img{
-        margin: 10px;
+        margin: 5px;
       }
       .select2-container--default .select2-results__option--selected, .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
         background-color: #f1f1f1;
@@ -122,6 +129,7 @@
       .select2-container--open .select2-dropdown--below{
         border-radius: 10px;
       }
+
 
       #loginStatusMessage {
         display: inline-block;
@@ -161,11 +169,11 @@
 </head>
 
 <body>
-    <div className="loader" id="loader" style="display: none;">
-        <div className="status">
-            <Spinner animation="border" role="status" variant="primary">
-                <span className="sr-only">Loading...</span>
-            </Spinner>
+    <div class="loader hide" id="loader">
+        <div class="status">
+          <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
         </div>
     </div>
     <div class="container-fluid pr-5 pl-5">
