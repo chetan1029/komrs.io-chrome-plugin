@@ -59,15 +59,12 @@ function onInputFocus() {
   this.classList.remove("is-invalid");
 }
 
-function amazonSeller(marketplace) {
+function amazonSeller(marketplace, max_days) {
   var marketPlace = marketplace;
-  console.log(marketPlace);
   setTimeout(() => {
-
-  for(let iii=2; iii <= 8; iii++){
+  for(let iii=2; iii <= max_days; iii++){
     var militime = Date.now() - iii * 86400000;
     var ddate = pastDate(new Date(militime), marketPlace);
-    console.log(ddate);
     fetch(
         `https://sellercentral.${marketPlace}/gp/site-metrics/load-report-JSON.html/ref=au_xx_cont_sitereport?sortColumn=&filterFromDate=${ddate}&filterToDate=${ddate}&fromDate=${ddate}&toDate=${ddate}&cols=&reportID=102%3ADetailSalesTrafficBySKU&sortIsAscending=1&currentPage=0&dateUnit=1&viewDateUnits=ALL&runDate=`
       )
@@ -106,7 +103,7 @@ function amazonSeller(marketplace) {
                       comp_id = 14;
                     }
                     fetch(
-                      `https://api.komrs.io/companies/${comp_id}/amazon-product-sessions/bulk_create/`,
+                      `https://api.komrs.io/companies/${comp_id}/amazon-product-sessions/bulk_create/?marketplace=${marketPlace}`,
                       {
                         method: "POST",
                         headers: {
@@ -200,7 +197,6 @@ function marketPlaces() {
         } else {
           comp_id = 14;
         }
-        console.log(comp_id);
 
         fetch(
           `https://api.komrs.io/companies/${comp_id}/amazon-marketplaces/?limit=100000000`,
@@ -210,7 +206,6 @@ function marketPlaces() {
             return res.json();
           })
           .then((res2) => {
-            console.log(res2);
             if (res2.count !== undefined) {
               var list = "";
               var ddData = [];
@@ -228,9 +223,13 @@ function marketPlaces() {
 
               for (let i = 0; i < res2.results.length; i++) {
                 if (res2.results[i].status == "active") {
+                  max_days = 4;
+                  if (res2.results[i].first_login){
+                    max_days = 30;
+                  }
                   setTimeout(() => {
-                    amazonSeller(res2.results[i].sales_channel_name);
-                  }, 1000);
+                    amazonSeller(res2.results[i].sales_channel_name, max_days);
+                  }, 10000);
                 }
               }
             }
@@ -241,7 +240,6 @@ function marketPlaces() {
 }
 
 function grabCompany(e) {
-  console.log(e.target.value);
   document.querySelector("#keywordsTextarea").value = '';
   if(document.querySelector('#marketplaceSelect > option:checked').getAttribute("status") == "active"){
   chrome.storage.local.get(["token", "comp_id"], (a) => {
@@ -262,7 +260,6 @@ function grabCompany(e) {
       }
 
       var marketplace_id = $("#marketplaceSelect").val();
-      console.log(marketplace_id);
 
       fetch(
         `https://api.komrs.io/companies/${comp_id}/keyword-tracking-products/?limit=100000000&status__name=Active&marketplace=${marketplace_id}`,
@@ -273,7 +270,6 @@ function grabCompany(e) {
           return res.json();
         })
         .then((res2) => {
-          console.log(res2);
           if (res2.count !== undefined) {
             var list = "";
             var ddData = [];
