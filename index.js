@@ -429,15 +429,23 @@ async function onCheckRanksButtonClick(e) {
 
   prepare();
 
-  try {
-    await checkRanks(marketplace, asin, keywords, pageIndexArray);
-  } catch (err) {
-    console.log("Error occured:");
-    console.log(err);
-  } finally {
-    stopProgress();
-    console.log("ended");
-    post2DB();
+  size = 200;
+  var total_keywords = keywords.length
+  for(var i = 0; i < keywords.length; i += size) {
+    var newKeywordArray = [];
+    newKeywordArray = keywords.slice(i,i+size);
+    try {
+      await checkRanks(marketplace, asin, newKeywordArray, pageIndexArray, total_keywords, i);
+    } catch (err) {
+      console.log("Error occured:");
+      console.log(err);
+    } finally {
+      if (newKeywordArray.length === 0){
+        stopProgress();
+        console.log("ended");
+      }
+      post2DB();
+    }
   }
 
   this.disabled = false;
@@ -541,9 +549,9 @@ function onTheadClick() {
 
 /* <Main stuff> */
 
-async function checkRanks(marketplace, asin, keywords, pageIndexArray) {
-  const itemsLength = keywords.length;
-  let processedItems = 0;
+async function checkRanks(marketplace, asin, keywords, pageIndexArray, total_keywords, scraped_keywords) {
+  const itemsLength = total_keywords;
+  let processedItems = scraped_keywords;
 
   let resultItems = keywords.map((keyword) => {
     return {
