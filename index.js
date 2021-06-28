@@ -444,7 +444,7 @@ async function onCheckRanksButtonClick(e) {
   }
   stopProgress();
   console.log("ended");
-  
+
   this.disabled = false;
 }
 
@@ -579,6 +579,7 @@ async function checkRanks(marketplace, asin, keywords, pageIndexArray, total_key
     let captcha = resultItems.find((resultItem) => resultItem.captcha);
 
     if (captcha) {
+      $("#captchaLink").html("<a href='https://"+marketplace+"' target='_blank' style='color:#ff0000;'>click here</a>");
       $("#captchaModal").modal("show");
       await waitForCaptchaSubmission();
       resultItems = clearCaptchaItems(resultItems);
