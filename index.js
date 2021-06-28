@@ -344,8 +344,6 @@ function keywords(e) {
       var comp_id = "";
       if (a.comp_id !== undefined) {
         comp_id = a.comp_id;
-      } else {
-        comp_id = 14;
       }
 
       var p_id = e.getAttribute('data-id');
@@ -452,6 +450,7 @@ async function onCheckRanksButtonClick(e) {
 }
 
 function post2DB() {
+  console.log("starting of post db");
   chrome.storage.local.get(["keywords_list"], (e) => {
     if (e.keywords_list !== undefined) {
       var tr = document.querySelectorAll("tbody > tr");
