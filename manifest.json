@@ -1,7 +1,7 @@
 {
 	"name": "Komrs.io Amazon keyword tracking tool",
 	"description": "",
-	"version": "0.3",
+	"version": "0.4.1",
 	"manifest_version": 2,
 	"background": {
 		"scripts": ["libs/jquery-3.1.0.min.js","background.js"]

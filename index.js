@@ -125,6 +125,7 @@ function amazonSeller(marketplace, max_days) {
             }
           } else {
             console.log("not logged in");
+            $("#marketplace-message").html("You are not loggedin to "+marketPlace+" Seller Account, <a href='https://sellercentral."+marketPlace+"'>click here to login</a>.");
             $("#alertpop").show();
           }
         });
