@@ -125,7 +125,7 @@ function amazonSeller(marketplace, max_days) {
             }
           } else {
             console.log("not logged in");
-            $("#marketplace-message").html("You are not loggedin to "+marketPlace+" Seller Account, <a href='https://sellercentral."+marketPlace+"'>click here to login</a>.");
+            $("#marketplace-message").html("You are not loggedin to "+marketPlace+" Seller Account, <a href='https://sellercentral."+marketPlace+"' target='_blank'>click here to login</a>.");
             $("#alertpop").show();
           }
         });
@@ -439,14 +439,12 @@ async function onCheckRanksButtonClick(e) {
       console.log("Error occured:");
       console.log(err);
     } finally {
-      if (newKeywordArray.length === 0){
-        stopProgress();
-        console.log("ended");
-      }
       post2DB();
     }
   }
-
+  stopProgress();
+  console.log("ended");
+  
   this.disabled = false;
 }
 
@@ -780,11 +778,9 @@ function updateProgress(current, maximum) {
 }
 
 function stopProgress() {
-  progressContainer
-    .querySelector(".progress-icon")
-    .classList.remove("rotating");
-  // progressContainer.querySelector(".progress-fill").style.width = "100%"
-  // progressContainer.querySelector(".progress-text").textContent = "100%"
+  progressContainer.querySelector(".progress-icon").classList.remove("rotating");
+  progressContainer.querySelector(".progress-fill").style.background = "#0da903";
+  progressContainer.querySelector(".progress-text").textContent = "100% Completed"
 }
 
 /* </Progress management> */
