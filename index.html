@@ -10,97 +10,183 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-transcluent" />
     <meta name="format-detection" content="telephone=no" />
+    <link rel="icon" type="image/png" href="./assets/img/favicon.ico"/>
     <title>Komrs.io Amazon keyword tracking tool</title>
 
     <!-- Core CSS Template -->
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700;900&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="assets/css/main.css" />
+    <link rel="stylesheet" href="assets/css/select2.min.css" />
     <style>
-        #progressContainer {
-            display: flex;
-            align-items: center;
-            transition: opacity 0.7s;
-            opacity: 0;
-        }
+      #progressContainer {
+        display: flex;
+        align-items: center;
+        transition: opacity 0.7s;
+        opacity: 0;
+      }
 
-        .progress-icon {
-            margin-bottom: 3px;
-        }
+      .progress-icon {
+        margin-bottom: 3px;
+      }
 
-        .progress-bar-custom {
-            width: 100%;
-            height: 20px;
-            background: #f0f0f0;
-            position: relative;
-            border-radius: 4px;
-            overflow: hidden;
-        }
+      .progress-bar-custom {
+        width: 100%;
+        height: 20px;
+        background: #f0f0f0;
+        position: relative;
+        border-radius: 4px;
+        overflow: hidden;
+      }
 
-        .progress-fill {
-            background: #396aff;
-            height: 20px;
-            width: 0%;
-            transition: width 0.7s;
-        }
+      .progress-fill {
+        background: #396aff;
+        height: 20px;
+        width: 0%;
+        transition: width 0.7s;
+      }
 
-        .progress-text {
-            color: white;
-            font-size: 14px;
-            position: absolute;
-            top: 50%;
-            left: 7px;
-            transform: translateY(-50%);
-        }
+      .progress-text {
+        color: white;
+        font-size: 14px;
+        position: absolute;
+        top: 50%;
+        left: 7px;
+        transform: translateY(-50%);
+      }
 
-        .rotating {
-            animation: spin 2s linear infinite;
-        }
+      .rotating {
+        animation: spin 2s linear infinite;
+      }
+      .dd-option-image,
+      .dd-selected-image {
+        width: 30px !important;
+        height: 50px !important;
+      }
+      .dd_img {
+        width: auto !important;
+        height: 30px !important;
+        margin: 5px;
+        vertical-align: middle;
+      }
+      .select2-selection{
+        height: 48px !important;
+      }
+      .select2-selection__arrow{
+        margin: 8px !important;
+      }
+      .select2-selection__rendered{
+        margin-top: -5px;
+      }
+      .dd_text {
+      margin-top: 4px !important;
+      font-weight: 500;
+      margin-left: 10px;
+      line-height: 18px !important;
+      }
+      .dd_span {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        margin-top: 5px;
+      }
+      .select2-container--default .select2-selection--single{
+        border: .5px solid rgba(140,157,202,.5)!important;
+        border-radius: 10px;
+      }
+      .select2-search--dropdown{
+        padding: 10px;
+      }
+      .select2-search__field{
+        display: block;
+        width: 100%;
+        height: calc(2.08em + 1rem + 1px);
+        padding: .5rem .75rem;
+        font-size: .875rem;
+        font-weight: 400;
+        line-height: 1.3;
+        color: #4b4b5a;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: .5px solid rgba(140,157,202,.5) !important;
+        border-radius: 10px;
+        transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+      }
+      .select2-dropdown ul {
+        padding: 10px;
+      }
+      .select2-dropdown li {
+        margin-top: 5px;
+        height: 55px;
+      }
+      .select2-results .dd_img{
+        margin: 5px;
+      }
+      .select2-container--default .select2-results__option--selected, .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #f1f1f1;
+        color: black;
+      }
+      .select2-container--open .select2-dropdown--below{
+        border-radius: 10px;
+      }
 
-        #loginStatusMessage {
-            display: inline-block;
-            margin-left: 24px;
-        }
 
-        #loginStatusMessage.failure {
-            color: #dc3545;
-        }
+      #loginStatusMessage {
+        display: inline-block;
+        margin-left: 24px;
+      }
 
-        #loginStatusMessage.success {
-            color: #00b997;
-        }
+      #loginStatusMessage.failure {
+        color: #dc3545;
+      }
 
-        #resultsTable th {
-            cursor: pointer;
-            user-select: none;
-        }
+      #loginStatusMessage.success {
+        color: #00b997;
+      }
 
-        #downloadCSVButton,
-        #downloadExcelButton {
-            display: inline !important;
-        }
+      #resultsTable th {
+        cursor: pointer;
+        user-select: none;
+      }
 
-        @keyframes spin {
-            100% {
-                -webkit-transform: rotate(360deg);
-                transform: rotate(360deg);
-            }
+      #downloadCSVButton,
+      #downloadExcelButton {
+        display: inline !important;
+      }
+
+      .hide {
+        display: none;
+      }
+
+      @keyframes spin {
+        100% {
+          -webkit-transform: rotate(360deg);
+          transform: rotate(360deg);
         }
+      }
+
     </style>
 </head>
 
 <body>
+    <div class="loader hide" id="loader">
+        <div class="status">
+          <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+        </div>
+    </div>
     <div class="container-fluid pr-5 pl-5">
         <header>
             <div class="navbar">
                 <div class="d-flex justify-content-between header_bot">
-                    <a href="https://beta.thebatonline.com/" target="_blank">
-                        <img src="./assets/img/logo.svg" alt="" />
+                    <a href="https://komrs.io/" target="_blank">
+                        <img src="./assets/img/logo.png" alt="Komrs.io" style="height:25px;" />
                     </a>
                     <p class="logged-out hidden">
                         <a href="#" class="text-primary" data-toggle="modal" data-target="#loginModal"
                             id="signInButton">Sign In</a> Or
-                        <a href="https://beta.thebatonline.com/signup" target="_blank" class="text-primary">Register</a>
+                        <a href="https://app.komrs.io/signup" target="_blank" class="text-primary">Register</a>
                     </p>
                     <p class="logged-in hidden">
                         <a href="#" class="text-primary" id="logoutButton">Logout</a>
@@ -108,37 +194,34 @@
                 </div>
             </div>
         </header>
+        <div id="alertpop" class="hide alert alert-danger" role="alert">
+          <span id="marketplace-message">You are not loggedin to Amazon Seller Account, please login.</span>
+        </div>
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="card-title">Keyword Rank</h1>
+                <h1 class="card-title">Komrs.io Amazon keyword tracking tool</h1>
                 <div class="card min_height dash_card mt-3">
                     <div class="card-body">
-                        <h3 class="text-muted mb-4">Instantly check your listing's keywords indexing status, ranking
-                            positions and monthly search volume on Amazon.</h3>
+                        <h3 class="text-muted mb-4">Instantly check your listing's keywords indexing status and ranking
+                            positions on Amazon.</h3>
                         <form>
                             <div class="row">
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label class="form-label">Amazon Market</label>
                                         <select class="form-control" id="marketplaceSelect">
-                                            <option value="amazon.com">Amazon.com</option>
-                                            <option value="amazon.ca">Amazon.ca</option>
-                                            <option value="amazon.co.jp">Amazon.co.jp</option>
-                                            <option value="amazon.co.uk">Amazon.co.uk</option>
-                                            <option value="amazon.fr">Amazon.fr</option>
-                                            <option value="amazon.it">Amazon.it</option>
-                                            <option value="amazon.de">Amazon.de</option>
-                                            <option value="amazon.in">Amazon.in</option>
-                                            <option value="amazon.com.mx">Amazon.com.mx</option>
-                                            <option value="amazon.com.au">Amazon.com.au</option>
+                                            <option value="">Select Amazon Marketplace</option>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="col-md-9">
                                     <div class="form-group">
                                         <label class="form-label">Enter Product ASIN</label>
-                                        <input placeholder="Enter Product ASIN" name="asinInput" type="text"
-                                            id="asinInput" class="form-control">
+                                        <input placeholder="Enter Product ASIN" style="display: none;" name="asin_input" type="text"
+                                            id="asin_input" class="form-control">
+                                        <select class="form-control" name="states[]" id="asinInput">
+                                          <option value="">Select Product</option>
+                                        </select>
                                         <div class="invalid-feedback">ASIN is required</div>
                                     </div>
                                 </div>
@@ -147,7 +230,7 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label class="form-label">Keywords</label>
-                                        <textarea placeholder="Separate your keywords with a new line (200 Keywords maximum at one time)."
+                                        <textarea placeholder="Separate your keywords with a new line."
                                             name="keywordsTextarea" id="keywordsTextarea" class="form-control"
                                             rows="8"></textarea>
                                         <div class="invalid-feedback"></div>
@@ -274,7 +357,7 @@
                     </div>
                     <div class="row">
                         <div class="text-right col"><a class="font-weight-bold"
-                                href="https://beta.thebatonline.com/forgot-password" target="_blank">Forgot
+                                href="https://app.komrs.io/forgot-password" target="_blank">Forgot
                                 Password?</a></div>
                     </div>
                     <div class="form-group">
@@ -282,7 +365,7 @@
                         <div id="loginStatusMessage"></div>
                     </div>
                     <p class="text-muted mt-1 mb-4">Do not have the account? <a class="text-primary font-weight-bold"
-                            href="https://beta.thebatonline.com/signup" target="_blank">Sign Up</a></p>
+                            href="https://app.komrs.io/signup" target="_blank">Sign Up</a></p>
                 </div>
 
             </div>
@@ -296,7 +379,7 @@
                     <h5 class="modal-title" id="captchaModalLabel">Captcha verification needed</h5>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group">You are blocked from Amazon. Please <a href="#" target="_blank">Click here</a> solve captcha on Amazon page and press
+                    <div class="form-group">You are blocked from Amazon. Please <span id="captchaLink"><a href="#" target="_blank" style="color:#ff0000;">click here</a></span> solve captcha on Amazon page and press
                         continue button</div>
                     <div class="form-group">
                         <button type="button" class="btn btn-primary" id="captchaContinueButton">Continue</button>
@@ -320,11 +403,45 @@
             </div>
         </div>
     </div>
+    <div
+      class="modal fade"
+      id="sessionModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="sessionModalLabel"
+      aria-modal="true"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="sessionModalLabel">Not Logged In</h5>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              You are not logged in to amazon seller account, please log in
+            </div>
+            <div class="form-group">
+              <button
+                type="button"
+                class="btn btn-primary"
+                id="sessionConfirmButton"
+              >
+                Got it
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
 </body>
 <!-- JavaScript Bundle with Popper -->
-<script src="libs/jquery-3.5.1.slim.min.js"></script>
+<script src="libs/jquery-3.1.0.min.js"></script>
+<!-- <script src="libs/jquery-3.5.1.slim.min.js"></script> -->
+<script src="libs/select2.min.js"></script>
 <script src="libs/bootstrap.bundle.min.js"></script>
 <script src="libs/excellentexport.js"></script>
+<script src="libs/ddslick.js"></script>
 <script src="index.js"></script>
 
 </html>
