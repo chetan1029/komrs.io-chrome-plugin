@@ -12,12 +12,40 @@ async function init() {
   marketPlaces();
   manageNavigationBar();
   attachEventListeners();
+  refreshToken();
 }
 
 function manageNavigationBar() {
   if (isLoggedIn)
     document.querySelector(".navbar .logged-in").classList.remove("hidden");
   else document.querySelector(".navbar .logged-out").classList.remove("hidden");
+}
+
+function refreshToken () {
+  chrome.storage.local.get(['token'], (e) => {
+    if(e.token !== undefined){
+      fetch('https://api.komrs.io/token-refresh/',{
+        method: 'POST',
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body: JSON.stringify({
+          token: e.token
+        })
+      }).then((res) => {
+         return res.json();
+      }).then((res2) => {
+        console.log(res2);
+        if(res2.token !== undefined){
+          chrome.storage.local.set({token: res2.token});
+        } else {
+          if(isLoggedIn){
+            handleLogoutSuccess();
+          }
+        }
+      })
+    }
+  })
 }
 
 function attachEventListeners() {
