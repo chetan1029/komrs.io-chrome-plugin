@@ -456,7 +456,7 @@ async function onCheckRanksButtonClick(e) {
 
   prepare();
 
-  size = 200;
+  size = 20;
   var total_keywords = keywords.length
   for(var i = 0; i < keywords.length; i += size) {
     var newKeywordArray = [];
@@ -466,6 +466,10 @@ async function onCheckRanksButtonClick(e) {
     } catch (err) {
       console.log("Error occured:");
       console.log(err);
+      if(err == "Temporary block."){
+        stopProgressBlocked();
+      }
+      return;
     } finally {
       post2DB();
     }
@@ -654,7 +658,7 @@ async function checkRanks(marketplace, asin, keywords, pageIndexArray, total_key
     updateProgress(processedItems, itemsLength);
     resultItems = getNotFinishedItems(resultItems);
 
-    await wait(500);
+    await wait(1000);
   }
 }
 
@@ -810,6 +814,14 @@ function stopProgress() {
   progressContainer.querySelector(".progress-icon").classList.remove("rotating");
   progressContainer.querySelector(".progress-fill").style.background = "#0da903";
   progressContainer.querySelector(".progress-text").textContent = "100% Completed"
+  progressContainer.querySelector(".progress-fill").style.width = "100%"
+}
+
+function stopProgressBlocked() {
+  progressContainer.querySelector(".progress-icon").classList.remove("rotating");
+  progressContainer.querySelector(".progress-fill").style.background = "#ff0000";
+  progressContainer.querySelector(".progress-text").textContent = "You get Temporary blocked from Amazon. Please try later."
+  progressContainer.querySelector(".progress-fill").style.width = "100%"
 }
 
 /* </Progress management> */
@@ -858,6 +870,8 @@ async function getItemIndexationForKeyword(resultItem, marketplace, asin) {
 
   if (rank) resultItem.indexed = true;
   else resultItem.indexed = false;
+
+  await wait(200);
 
   return resultItem;
 }
