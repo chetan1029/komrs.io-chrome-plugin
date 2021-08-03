@@ -1,9 +1,16 @@
+
+try {
+    importScripts("libs/jquery-3.1.0.min.js");
+} catch (e) {
+    console.log(e);
+}
+
 var appTabId = null
 
 init()
 
 function init(){
-    chrome.browserAction.onClicked.addListener(openApp)
+    chrome.action.onClicked.addListener(openApp)
     chrome.tabs.onRemoved.addListener(onTabRemoveListener)
 }
 
