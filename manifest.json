@@ -2,11 +2,11 @@
 	"name": "Komrs.io Amazon keyword tracking tool",
 	"description": "",
 	"version": "0.4.3",
-	"manifest_version": 2,
+	"manifest_version": 3,
 	"background": {
 		"scripts": ["libs/jquery-3.1.0.min.js","background.js"]
 	},
-	"browser_action": {},
+	"action": {},
 	"icons": {
 		"16": "icons/favicon-16x16.png",
 		"32": "icons/favicon-32x32.png",
@@ -15,7 +15,9 @@
 		"256": "icons/favicon-256x256.png"
 	},
 	"permissions": [
-		"storage",
+		"storage"
+	],
+	"host_permissions": [
 		"https://api.komrs.io/*",
 		"https://www.amazon.com/",
 		"https://www.amazon.ca/",
@@ -72,7 +74,5 @@
 		"https://*.amazon.com.br/*",
 		"https://sellercentral.amazon.com.au/*",
 		"https://*.amazon.com.au/*"
-
-
 	]
 }
