@@ -13,6 +13,7 @@ async function init() {
   manageNavigationBar();
   attachEventListeners();
   refreshToken();
+  onInputFocus();
 }
 
 function manageNavigationBar() {
@@ -50,7 +51,8 @@ function refreshToken () {
 
 function attachEventListeners() {
   marketplaceSelect.addEventListener("change", grabCompany);
-  keywordsTextarea.addEventListener("focus", onInputFocus);
+  keywordsTextarea.addEventListener("input", noofKeyword);
+  keywordsTextarea.addEventListener("change", noofKeyword);
   uidInput.addEventListener("focus", () => {
     uidInput.classList.remove("is-invalid");
   });
@@ -83,8 +85,17 @@ function attachEventListeners() {
 
 function onInputFocus() {
   if (!isLoggedIn) return $("#loginModal").modal("show");
+  keywordsTextarea.classList.remove("is-invalid");
+  noofKeyword();
+}
 
-  this.classList.remove("is-invalid");
+function noofKeyword(){
+  no_of_keywords = document.querySelector('textarea').value.split("\n").length;
+  let message = "Keywords";
+  if (no_of_keywords > 300){
+    message += " <span class='text-danger'>(Please keep keywords below 300 for best performance)</span>";
+  }
+  document.querySelector("#numberOfkeywords").innerHTML = (no_of_keywords - 1)+" "+message;
 }
 
 function amazonSeller(marketplace, max_days) {
@@ -402,7 +413,7 @@ function keywords(e) {
           } else {
             document.querySelector("#keywordsTextarea").value = '';
           }
-
+          noofKeyword();
         });
 
     }
@@ -456,7 +467,7 @@ async function onCheckRanksButtonClick(e) {
 
   prepare();
 
-  size = 20;
+  size = 200;
   var total_keywords = keywords.length
   for(var i = 0; i < keywords.length; i += size) {
     var newKeywordArray = [];
@@ -583,6 +594,13 @@ async function checkRanks(marketplace, asin, keywords, pageIndexArray, total_key
   const itemsLength = total_keywords;
   let processedItems = scraped_keywords;
 
+  let wait_time = 200;
+  if (total_keywords > 300 && total_keywords <= 500){
+    wait_time = 500;
+  }else if (total_keywords > 500 ) {
+    wait_time = 1000;
+  }
+
   let resultItems = keywords.map((keyword) => {
     return {
       keyword,
@@ -658,7 +676,7 @@ async function checkRanks(marketplace, asin, keywords, pageIndexArray, total_key
     updateProgress(processedItems, itemsLength);
     resultItems = getNotFinishedItems(resultItems);
 
-    await wait(1000);
+    await wait(wait_time);
   }
 }
 
@@ -871,7 +889,7 @@ async function getItemIndexationForKeyword(resultItem, marketplace, asin) {
   if (rank) resultItem.indexed = true;
   else resultItem.indexed = false;
 
-  await wait(200);
+  await wait(50);
 
   return resultItem;
 }
