@@ -104,69 +104,86 @@ function amazonSeller(marketplace, max_days) {
   for(let iii=2; iii <= max_days; iii++){
     var militime = Date.now() - iii * 86400000;
     var ddate = pastDate(new Date(militime), marketPlace);
-    fetch(
-        `https://sellercentral.${marketPlace}/gp/site-metrics/load-report-JSON.html/ref=au_xx_cont_sitereport?sortColumn=&filterFromDate=${ddate}&filterToDate=${ddate}&fromDate=${ddate}&toDate=${ddate}&cols=&reportID=102%3ADetailSalesTrafficBySKU&sortIsAscending=1&currentPage=0&dateUnit=1&viewDateUnits=ALL&runDate=`
-      )
-        .then((rrs) => {
-          return rrs.text();
-        })
-        .then((rrs2) => {
-          var div = document.createElement("div");
-          div.innerHTML = rrs2;
-          var menu = div.querySelectorAll("#sc-top-nav");
-          if (menu.length > 0) {
-            var tb = div.querySelectorAll("#sc-content-container");
-            if (tb.length > 0) {
-              // console.log(tb);
-              var parsed_data = JSON.parse(tb[0].textContent);
-              var session_details = [];
-              var militime = Date.now() - iii * 86400000;
-              if (parsed_data.data.rows.length > 0) {
-                for (let i = 0; i < parsed_data.data.rows.length; i++) {
-                  var obj = {};
-                  obj.sku = parsed_data.data.rows[i][3];
-                  obj.sessions = parseInt(parsed_data.data.rows[i][4]);
-                  obj.page_views = parseInt(parsed_data.data.rows[i][6]);
-                  obj.date = currentDate(new Date(militime));
-                  session_details.push(obj);
+    // fetch(
+    //     `https://sellercentral.${marketPlace}/gp/site-metrics/load-report-JSON.html/ref=au_xx_cont_sitereport?sortColumn=&filterFromDate=${ddate}&filterToDate=${ddate}&fromDate=${ddate}&toDate=${ddate}&cols=&reportID=102%3ADetailSalesTrafficBySKU&sortIsAscending=1&currentPage=0&dateUnit=1&viewDateUnits=ALL&runDate=`
+    //   )
+      fetch(
+          `https://sellercentral.${marketPlace}/business-reports/api`,{
+            method: 'POST',
+            headers:{
+              "Content-Type":"application/json",
+              "Accept":"application/json"
+            },
+            body: JSON.stringify({
+              operationName: "reportDataQuery",
+              query: "query reportDataQuery($input: GetReportDataInput) {\n  getReportData(input: $input) {\n    granularity\n    hadPrevious\n    hasNext\n    size\n    startDate\n    endDate\n    page\n    columns {\n      label\n      valueFormat\n      isGraphable\n      translationKey\n      isDefaultSortAscending\n      isDefaultGraphed\n      isDefaultSelected\n      isDefaultSortColumn\n      __typename\n    }\n    rows\n    __typename\n  }\n}\n",
+              variables: {
+                input:{
+                  endDate: `${ddate}`,
+                  legacyReportId: "102:DetailSalesTrafficBySKU",
+                  startDate: `${ddate}`
                 }
               }
-              console.log(JSON.stringify(session_details));
-              if (session_details.length > 0) {
-                chrome.storage.local.get(["token", "comp_id"], (a) => {
-                  if (a.token !== undefined) {
-                    var comp_id = "";
-                    if (a.comp_id !== undefined) {
-                      comp_id = a.comp_id;
-                    } else {
-                      comp_id = 14;
-                    }
-                    fetch(
-                      `https://api.komrs.io/companies/${comp_id}/amazon-product-sessions/bulk_create/?marketplace=${marketPlace}`,
-                      {
-                        method: "POST",
-                        headers: {
-                          Authorization: `JWT ${a.token}`,
-                          "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify(session_details),
-                      }
-                    )
-                      .then((res) => {
-                        return res.json();
-                      })
-                      .then((res2) => {
-                        console.log(res2);
-                      });
-                  }
-                });
-              }
-            }
-          } else {
-            console.log("not logged in");
-            $("#marketplace-message").html("You are not loggedin to "+marketPlace+" Seller Account, <a href='https://sellercentral."+marketPlace+"' target='_blank'>click here to login</a>.");
-            $("#alertpop").show();
+            })
           }
+        )
+        .then(response => response.json())
+        .then((rrs2) => {
+          console.log("inside");
+          console.log(rrs2);
+
+          var session_details = [];
+          var militime = Date.now() - iii * 86400000;
+
+          if (rrs2.data.getReportData.rows.length > 0) {
+            for (let i = 0; i < rrs2.data.getReportData.rows.length; i++) {
+              var obj = {};
+              obj.sku = rrs2.data.getReportData.rows[i][3];
+              obj.sessions = parseInt(rrs2.data.getReportData.rows[i][4]);
+              obj.page_views = parseInt(rrs2.data.getReportData.rows[i][6]);
+              obj.date = currentDate(new Date(militime));
+              session_details.push(obj);
+            }
+          }
+          console.log(JSON.stringify(session_details));
+          if (session_details.length > 0) {
+            chrome.storage.local.get(["token", "comp_id"], (a) => {
+              if (a.token !== undefined) {
+                var comp_id = "";
+                if (a.comp_id !== undefined) {
+                  comp_id = a.comp_id;
+                } else {
+                  comp_id = 14;
+                }
+                fetch(
+                  `https://api.komrs.io/companies/${comp_id}/amazon-product-sessions/bulk_create/?marketplace=${marketPlace}`,
+                  {
+                    method: "POST",
+                    headers: {
+                      Authorization: `JWT ${a.token}`,
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(session_details),
+                  }
+                )
+                  .then((res) => {
+                    return res.json();
+                  })
+                  .then((res2) => {
+                    console.log(res2);
+                  });
+              }
+            });
+          }
+          // } else {
+          //   console.log("not logged in");
+          //   $("#marketplace-message").html("You are not loggedin to "+marketPlace+" Seller Account, <a href='https://sellercentral."+marketPlace+"' target='_blank'>click here to login</a>.");
+          //   $("#alertpop").show();
+          // }
+        }).catch((error) => {
+          console.log(error);
+          $("#marketplace-message").html("You are not loggedin to "+marketPlace+" Seller Account, <a href='https://sellercentral."+marketPlace+"' target='_blank'>click here to login</a>.");
+          $("#alertpop").show();
         });
 
   }
@@ -185,11 +202,8 @@ if (month.length < 2) {
 if (day.length < 2) {
   day = "0" + day;
 }
-if (marketPlace == "Amazon.com" || marketPlace == "Amazon.ca"){
-var new_date = month + "%2F" + day + "%2F" + year;
-}else{
-var new_date = day + "%2F" + month + "%2F" + year;
-}
+var new_date = year + "-" + month + "-" + day;
+
 return new_date;
 }
 
