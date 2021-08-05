@@ -414,6 +414,7 @@ function keywords(e) {
             document.querySelector("#keywordsTextarea").value = '';
           }
           noofKeyword();
+          resetProgress();
         });
 
     }
@@ -815,6 +816,13 @@ function initiateProgress() {
   progressContainer.querySelector(".progress-fill").style.width = "0%";
   progressContainer.querySelector(".progress-text").textContent = "0%";
   progressContainer.style.opacity = "1";
+}
+
+function resetProgress() {
+  progressContainer.querySelector(".progress-icon").classList.add("rotating");
+  progressContainer.querySelector(".progress-fill").style.width = "0%";
+  progressContainer.querySelector(".progress-text").textContent = "0%";
+  progressContainer.style.opacity = "0";
 }
 
 function updateProgress(current, maximum) {
